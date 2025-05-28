@@ -14,36 +14,38 @@ $smart404ai = new Smart404AI();
 $ai_analysis = $smart404ai->analyze_broken_url($current_url, $referrer);
 ?>
 
-<div class="ai-404-container">
-    <div class="ai-404-header">
-        <h1 class="ai-404-title">🤖 Oops! Page Not Found</h1>
-        <div class="ai-404-subtitle">But our AI assistant is here to help you find what you're looking for!</div>
+<div class="smart404ai-container">
+    <div class="smart404ai-header">
+        <?php if (isset($ai_analysis['fun_title'])): ?>
+            <h1 class="smart404ai-title">
+                <span class="icon-error"></span>
+                <?php echo esc_html($ai_analysis['fun_title']); ?>
+            </h1>
+        <?php else: ?>
+            <h1 class="smart404ai-title">
+                <span class="icon-error"></span>
+                Oops! Page Not Found
+            </h1>
+        <?php endif; ?>
+        
+        <?php if (isset($ai_analysis['fun_message'])): ?>
+            <div class="smart404ai-subtitle"><?php echo esc_html($ai_analysis['fun_message']); ?></div>
+        <?php else: ?>
+            <div class="smart404ai-subtitle">But our AI assistant is here to help you find what you're looking for!</div>
+        <?php endif; ?>
     </div>
 
-    <div class="ai-404-content">
+    <div class="smart404ai-content">
         
-        <!-- AI Analysis Section -->
-        <div class="ai-analysis-section">
-            <h2>🧠 AI Analysis</h2>
-            <div class="ai-analysis-box">
-                <?php if (isset($ai_analysis['analysis'])): ?>
-                    <p><strong>What you were likely looking for:</strong> <?php echo esc_html($ai_analysis['analysis']); ?></p>
-                <?php endif; ?>
-                
-                <?php if (isset($ai_analysis['message'])): ?>
-                    <div class="ai-message">
-                        <p><?php echo esc_html($ai_analysis['message']); ?></p>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-
         <!-- Smart Suggestions Section -->
         <?php if (isset($ai_analysis['suggestions']) && !empty($ai_analysis['suggestions'])): ?>
         <div class="ai-suggestions-section">
-            <h2>🎯 Smart Suggestions</h2>
+            <h2><span class="icon-target"></span> Smart Suggestions</h2>
             <div class="suggestions-grid">
-                <?php foreach ($ai_analysis['suggestions'] as $suggestion): ?>
+                <?php 
+                // Limit to 4 suggestions max
+                $suggestions = array_slice($ai_analysis['suggestions'], 0, 4);
+                foreach ($suggestions as $suggestion): ?>
                     <div class="suggestion-card">
                         <h3><a href="<?php echo esc_url($suggestion['url']); ?>"><?php echo esc_html($suggestion['title']); ?></a></h3>
                         <p class="suggestion-reason"><?php echo esc_html($suggestion['reason']); ?></p>
@@ -56,13 +58,13 @@ $ai_analysis = $smart404ai->analyze_broken_url($current_url, $referrer);
 
         <!-- AI Chat Assistant -->
         <div class="ai-chat-section">
-            <h2>💬 Ask Our AI Assistant</h2>
+            <h2><span class="icon-chat"></span> Ask Our AI Assistant</h2>
             <div class="ai-chat-container">
                 <div class="chat-messages" id="chat-messages">
                     <div class="ai-message">
-                        <div class="message-avatar">🤖</div>
+                        <div class="message-avatar"><span class="icon-bot"></span></div>
                         <div class="message-content">
-                            <p>Hi! I'm your AI assistant. I can help you find what you're looking for on this site. What were you hoping to find?</p>
+                            <p>Hi there! I'm your AI assistant. I can help you find what you're looking for on this site, or we can just chat about what brought you here. What were you hoping to find?</p>
                         </div>
                     </div>
                 </div>
@@ -84,7 +86,7 @@ $ai_analysis = $smart404ai->analyze_broken_url($current_url, $referrer);
         <!-- Technical Details (Collapsible) -->
         <div class="technical-details">
             <details>
-                <summary>🔧 Technical Details</summary>
+                <summary><span class="icon-settings"></span> Technical Details</summary>
                 <div class="tech-info">
                     <p><strong>Broken URL:</strong> <code><?php echo esc_html($current_url); ?></code></p>
                     <?php if ($referrer): ?>
@@ -100,8 +102,8 @@ $ai_analysis = $smart404ai->analyze_broken_url($current_url, $referrer);
         <div class="fallback-navigation">
             <h3>Or browse our main sections:</h3>
             <div class="nav-links">
-                <a href="<?php echo home_url(); ?>" class="nav-button">🏠 Home</a>
-                <a href="<?php echo home_url('/blog'); ?>" class="nav-button">📝 Blog</a>
+                <a href="<?php echo home_url(); ?>" class="nav-button"><span class="icon-home"></span> Home</a>
+                <a href="<?php echo home_url('/blog'); ?>" class="nav-button"><span class="icon-blog"></span> Blog</a>
                 <?php
                 $pages = get_pages(array('sort_column' => 'menu_order', 'number' => 5));
                 foreach ($pages as $page):
