@@ -84,21 +84,31 @@ jQuery(document).ready(function($) {
         // Convert bullet points that might use different characters
         html = html.replace(/^[•▪▫‣⁃]\s+(.*)$/gm, '• $1');
         
-        // Convert markdown to HTML
-        // Bold text **text** or __text__
-        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+        // Fix malformed markdown (like ***text:**** to **text:**)
+        html = html.replace(/\*{3,}([^*]+?):\*{3,}/g, '**$1:**');
+        html = html.replace(/\*{3,}([^*]+?)\*{3,}/g, '**$1**');
         
-        // Italic text *text* or _text_ (but not if it's part of bold)
-        html = html.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<em>$1</em>');
-        html = html.replace(/(?<!_)_([^_]+?)_(?!_)/g, '<em>$1</em>');
+        // Convert markdown to HTML - Process bold first, then italic
+        // Bold text **text** or __text__
+        html = html.replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/__([^_]+?)__/g, '<strong>$1</strong>');
+        
+        // Italic text *text* or _text_ (only if not inside bold)
+        html = html.replace(/(?<!\<strong>)\*([^*\n]+?)\*(?!\<\/strong>)/g, '<em>$1</em>');
+        html = html.replace(/(?<!\<strong>)_([^_\n]+?)_(?!\<\/strong>)/g, '<em>$1</em>');
+        
+        // Fallback for browsers that don't support lookbehind
+        html = html.replace(/\*([^*\n]+?)\*/g, function(match, content) {
+            // Don't replace if it's inside a strong tag
+            return match.includes('<strong>') ? match : '<em>' + content + '</em>';
+        });
         
         // Code blocks ```code``` or ~~~code~~~
         html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
         html = html.replace(/~~~([\s\S]*?)~~~/g, '<pre><code>$1</code></pre>');
         
         // Inline code `code`
-        html = html.replace(/`([^`]+?)`/g, '<code>$1</code>');
+        html = html.replace(/`([^`\n]+?)`/g, '<code>$1</code>');
         
         // Headers
         html = html.replace(/^#{4}\s+(.*$)/gim, '<h4>$1</h4>');
@@ -106,8 +116,9 @@ jQuery(document).ready(function($) {
         html = html.replace(/^#{2}\s+(.*$)/gim, '<h2>$1</h2>');
         html = html.replace(/^#{1}\s+(.*$)/gim, '<h1>$1</h1>');
         
-        // Links [text](url)
+        // Links - Handle both markdown links and plain URLs in square brackets
         html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        html = html.replace(/\[Link:\s*([^\]]+)\]/g, '<a href="$1" target="_blank" rel="noopener">Visit Link</a>');
         
         // Handle line breaks and paragraphs
         const lines = html.split('\n');
@@ -117,6 +128,17 @@ jQuery(document).ready(function($) {
         
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
+            
+            // Skip empty lines
+            if (line === '') {
+                if (inList) {
+                    processedLines.push(`</${listType}>`);
+                    inList = false;
+                    listType = null;
+                }
+                processedLines.push('</p><p>');
+                continue;
+            }
             
             // Check if this line is a list item
             const isOrderedListItem = /^\d+\.\s/.test(line);
@@ -144,12 +166,7 @@ jQuery(document).ready(function($) {
                     inList = false;
                     listType = null;
                 }
-                
-                if (line === '') {
-                    processedLines.push('</p><p>');
-                } else {
-                    processedLines.push(line);
-                }
+                processedLines.push(line);
             }
         }
         
@@ -160,7 +177,7 @@ jQuery(document).ready(function($) {
         
         html = processedLines.join('\n');
         
-        // Clean up and wrap in paragraphs
+        // Clean up paragraph breaks and wrap content
         html = html.replace(/\n+/g, '\n');
         html = html.replace(/^\n|\n$/g, '');
         
@@ -169,9 +186,14 @@ jQuery(document).ready(function($) {
             html = '<p>' + html + '</p>';
         }
         
-        // Clean up consecutive paragraph breaks
+        // Clean up consecutive elements
         html = html.replace(/<\/p>\s*<p>/g, '</p><p>');
         html = html.replace(/<p>\s*<\/p>/g, '');
+        html = html.replace(/<\/ul>\s*<ul>/g, '');
+        html = html.replace(/<\/ol>\s*<ol>/g, '');
+        
+        // Final cleanup of malformed strong tags
+        html = html.replace(/<strong>([^<]*)<\/strong>:/g, '<strong>$1:</strong>');
         
         return html;
     }
@@ -179,7 +201,7 @@ jQuery(document).ready(function($) {
     // Enhanced message display with typing animation
     function addMessageToChatWithTyping(sender, message) {
         const messageClass = sender === 'user' ? 'user-message' : 'ai-message';
-        const avatar = sender === 'user' ? '👤' : '🤖';
+        const avatar = sender === 'user' ? '<span class="icon-user"></span>' : '<span class="icon-bot"></span>';
         
         const messageContainer = $(`
             <div class="${messageClass}">
@@ -195,16 +217,18 @@ jQuery(document).ready(function($) {
         
         const messageTextElement = messageContainer.find('.message-text');
         
-        if (sender === 'ai' && message.length > 50) {
+        // Always parse markdown for AI messages, escape HTML for user messages
+        const formattedMessage = sender === 'ai' ? parseMarkdown(message) : escapeHtml(message);
+        
+        if (sender === 'ai' && message.length > 100) {
             // Show typing animation for longer AI messages
-            let index = 0;
-            const formattedMessage = parseMarkdown(message);
+            messageTextElement.html('<div class="typing-indicator">AI is thinking...</div>');
             
-            // For typing effect, we'll add the full formatted content but hide it
-            messageTextElement.html(formattedMessage).hide().fadeIn(300);
+            setTimeout(function() {
+                messageTextElement.html(formattedMessage);
+            }, 800);
         } else {
             // For short messages or user messages, show immediately
-            const formattedMessage = sender === 'ai' ? parseMarkdown(message) : escapeHtml(message);
             messageTextElement.html(formattedMessage);
         }
         
@@ -328,7 +352,7 @@ jQuery(document).ready(function($) {
     }
     
     // Console easter egg
-    console.log('%c🤖 Smart404AI', 'font-size: 20px; color: #4285f4; font-weight: bold;');
+    console.log('%cSmart404AI', 'font-size: 20px; color: #4285f4; font-weight: bold;');
     console.log('%cThis 404 page is powered by Google Gemini AI!', 'font-size: 14px; color: #34a853;');
     console.log('%cFor developers: Try typing "debug" in the chat!', 'font-size: 12px; color: #ea4335;');
     
@@ -338,11 +362,12 @@ jQuery(document).ready(function($) {
             setTimeout(function() {
                 addMessageToChatWithTyping('ai', '**Debug mode activated!** Here are some technical details:\n\n' +
                     '• **AI Model:** Google Gemini 1.5 Flash\n' +
+                    '• **Smart Analysis:** URL analyzed behind-the-scenes for suggestions\n' +
+                    '• **Entertainment Mode:** Fun 404 titles and messages generated\n' +
+                    '• **Max Suggestions:** Limited to 4 most relevant matches\n' +
                     '• **Response Time:** ~2-3 seconds\n' +
-                    '• **Content Analysis:** Semantic matching enabled\n' +
-                    '• **Chat History:** Maintained for session\n' +
-                    '• **Error Logging:** Active\n\n' +
-                    'Want to see the source code? Check the browser developer tools!');
+                    '• **Chat History:** Maintained for session\n\n' +
+                    'The AI now provides both practical help AND entertainment!');
             }, 500);
         }
     });

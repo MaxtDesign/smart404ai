@@ -13,7 +13,7 @@
     color: #333;
 }
 
-.ai-404-header {
+.smart404ai-header {
     text-align: center;
     margin-bottom: 50px;
     padding: 40px 20px;
@@ -23,14 +23,15 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
-.ai-404-title {
+.smart404ai-title {
     font-size: 3.5em;
-    margin: 0 0 10px 0;
+    margin: 0 0 15px 0;
     background: linear-gradient(135deg, #4285f4, #34a853, #fbbc05, #ea4335);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: titleGlow 3s ease-in-out infinite alternate;
+    line-height: 1.1;
 }
 
 @keyframes titleGlow {
@@ -38,24 +39,28 @@
     100% { filter: brightness(1.2); }
 }
 
-.ai-404-subtitle {
+.smart404ai-subtitle {
     font-size: 1.2em;
     color: #666;
     margin: 0;
+    line-height: 1.4;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.ai-404-content {
+.smart404ai-content {
     display: grid;
     gap: 30px;
 }
 
-/* AI Analysis Section */
+/* AI Analysis Section - Now simplified for entertainment */
 .ai-analysis-section {
     background: rgba(255, 255, 255, 0.95);
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
+    display: none; /* Hidden as we now use header for entertaining content */
 }
 
 .ai-analysis-section h2 {
@@ -593,11 +598,11 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .ai-404-container {
+    .smart404ai-container {
         padding: 20px 15px;
     }
     
-    .ai-404-title {
+    .smart404ai-title {
         font-size: 2.5em;
     }
     
@@ -627,7 +632,7 @@
 }
 
 @media (max-width: 480px) {
-    .ai-404-title {
+    .smart404ai-title {
         font-size: 2em;
     }
     
@@ -635,7 +640,7 @@
         max-width: 85%;
     }
     
-    .ai-404-header,
+    .smart404ai-header,
     .ai-analysis-section,
     .ai-suggestions-section,
     .ai-chat-section,
@@ -646,12 +651,12 @@
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
-    .ai-404-container {
+    .smart404ai-container {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         color: #e0e0e0;
     }
     
-    .ai-404-header,
+    .smart404ai-header,
     .ai-analysis-section,
     .ai-suggestions-section,
     .ai-chat-section,
@@ -693,7 +698,7 @@
 
 /* High contrast mode */
 @media (prefers-contrast: high) {
-    .ai-404-header,
+    .smart404ai-header,
     .ai-analysis-section,
     .ai-suggestions-section,
     .ai-chat-section,
