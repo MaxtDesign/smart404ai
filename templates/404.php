@@ -57,6 +57,11 @@ $ai_analysis = $smart404ai->analyze_broken_url($current_url, $referrer);
         <?php endif; ?>
 
         <!-- AI Chat Assistant -->
+        <?php 
+        $smart404ai_options = get_option('smart404ai_options', array());
+        $enable_chat = isset($smart404ai_options['enable_chat']) ? $smart404ai_options['enable_chat'] : 1;
+        if ($enable_chat): 
+        ?>
         <div class="ai-chat-section">
             <h2><span class="icon-chat"></span> Ask Our AI Assistant</h2>
             <div class="ai-chat-container">
@@ -64,6 +69,7 @@ $ai_analysis = $smart404ai->analyze_broken_url($current_url, $referrer);
                     <span class="chat-title">AI Assistant</span>
                     <button type="button" id="expand-chat" class="expand-chat-btn" title="Expand Chat">
                         <span class="icon-expand"></span>
+                        <span class="expand-text">Expand</span>
                     </button>
                 </div>
                 <div class="chat-messages" id="chat-messages">
@@ -107,6 +113,7 @@ $ai_analysis = $smart404ai->analyze_broken_url($current_url, $referrer);
                 </div>
             </div>
         </div>
+        <?php endif; ?>
 
         <!-- Technical Details (Collapsible) -->
         <div class="technical-details">
