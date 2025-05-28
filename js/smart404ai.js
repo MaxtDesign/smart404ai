@@ -16,7 +16,7 @@ jQuery(document).ready(function($) {
         if (!message.trim()) return;
         
         // Add user message to chat
-        addMessageToChat('user', message);
+        addMessageToChatWithTyping('user', message);
         
         // Clear input
         chatInput.val('');
@@ -38,14 +38,14 @@ jQuery(document).ready(function($) {
                 hideLoading();
                 
                 if (response.success) {
-                    addMessageToChat('ai', response.data.message);
+                    addMessageToChatWithTyping('ai', response.data.message);
                 } else {
-                    addMessageToChat('ai', 'Sorry, I encountered an error: ' + response.data);
+                    addMessageToChatWithTyping('ai', 'Sorry, I encountered an error: ' + response.data);
                 }
             },
             error: function() {
                 hideLoading();
-                addMessageToChat('ai', 'Sorry, I\'m having trouble connecting right now. Please try again later.');
+                addMessageToChatWithTyping('ai', 'Sorry, I\'m having trouble connecting right now. Please try again later.');
             }
         });
     }
@@ -55,17 +55,159 @@ jQuery(document).ready(function($) {
         const messageClass = sender === 'user' ? 'user-message' : 'ai-message';
         const avatar = sender === 'user' ? '👤' : '🤖';
         
+        // For AI messages, parse markdown. For user messages, escape HTML
+        const formattedMessage = sender === 'ai' ? parseMarkdown(message) : escapeHtml(message);
+        
         const messageHtml = `
             <div class="${messageClass}">
                 <div class="message-avatar">${avatar}</div>
                 <div class="message-content">
-                    <p>${escapeHtml(message)}</p>
+                    <div class="message-text">${formattedMessage}</div>
                     <span class="message-time">${new Date().toLocaleTimeString()}</span>
                 </div>
             </div>
         `;
         
         chatMessages.append(messageHtml);
+        chatMessages.scrollTop(chatMessages[0].scrollHeight);
+    }
+    
+    // Parse basic markdown to HTML
+    function parseMarkdown(text) {
+        // Escape HTML first to prevent XSS
+        let html = escapeHtml(text);
+        
+        // Handle special AI response patterns first
+        // Convert numbered lists that might not have proper markdown format
+        html = html.replace(/^(\d+)\.?\s+(.*)$/gm, '$1. $2');
+        
+        // Convert bullet points that might use different characters
+        html = html.replace(/^[•▪▫‣⁃]\s+(.*)$/gm, '• $1');
+        
+        // Convert markdown to HTML
+        // Bold text **text** or __text__
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+        
+        // Italic text *text* or _text_ (but not if it's part of bold)
+        html = html.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<em>$1</em>');
+        html = html.replace(/(?<!_)_([^_]+?)_(?!_)/g, '<em>$1</em>');
+        
+        // Code blocks ```code``` or ~~~code~~~
+        html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+        html = html.replace(/~~~([\s\S]*?)~~~/g, '<pre><code>$1</code></pre>');
+        
+        // Inline code `code`
+        html = html.replace(/`([^`]+?)`/g, '<code>$1</code>');
+        
+        // Headers
+        html = html.replace(/^#{4}\s+(.*$)/gim, '<h4>$1</h4>');
+        html = html.replace(/^#{3}\s+(.*$)/gim, '<h3>$1</h3>');
+        html = html.replace(/^#{2}\s+(.*$)/gim, '<h2>$1</h2>');
+        html = html.replace(/^#{1}\s+(.*$)/gim, '<h1>$1</h1>');
+        
+        // Links [text](url)
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        
+        // Handle line breaks and paragraphs
+        const lines = html.split('\n');
+        const processedLines = [];
+        let inList = false;
+        let listType = null;
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            
+            // Check if this line is a list item
+            const isOrderedListItem = /^\d+\.\s/.test(line);
+            const isUnorderedListItem = /^[•▪▫‣⁃*-]\s/.test(line);
+            
+            if (isOrderedListItem || isUnorderedListItem) {
+                const currentListType = isOrderedListItem ? 'ol' : 'ul';
+                
+                if (!inList) {
+                    processedLines.push(`<${currentListType}>`);
+                    inList = true;
+                    listType = currentListType;
+                } else if (listType !== currentListType) {
+                    processedLines.push(`</${listType}>`);
+                    processedLines.push(`<${currentListType}>`);
+                    listType = currentListType;
+                }
+                
+                // Extract list item content
+                const content = line.replace(/^\d+\.\s|^[•▪▫‣⁃*-]\s/, '');
+                processedLines.push(`<li>${content}</li>`);
+            } else {
+                if (inList) {
+                    processedLines.push(`</${listType}>`);
+                    inList = false;
+                    listType = null;
+                }
+                
+                if (line === '') {
+                    processedLines.push('</p><p>');
+                } else {
+                    processedLines.push(line);
+                }
+            }
+        }
+        
+        // Close any remaining list
+        if (inList) {
+            processedLines.push(`</${listType}>`);
+        }
+        
+        html = processedLines.join('\n');
+        
+        // Clean up and wrap in paragraphs
+        html = html.replace(/\n+/g, '\n');
+        html = html.replace(/^\n|\n$/g, '');
+        
+        // Wrap in paragraph if not already wrapped in block elements
+        if (!html.match(/^<(h[1-6]|ul|ol|pre|div)/)) {
+            html = '<p>' + html + '</p>';
+        }
+        
+        // Clean up consecutive paragraph breaks
+        html = html.replace(/<\/p>\s*<p>/g, '</p><p>');
+        html = html.replace(/<p>\s*<\/p>/g, '');
+        
+        return html;
+    }
+    
+    // Enhanced message display with typing animation
+    function addMessageToChatWithTyping(sender, message) {
+        const messageClass = sender === 'user' ? 'user-message' : 'ai-message';
+        const avatar = sender === 'user' ? '👤' : '🤖';
+        
+        const messageContainer = $(`
+            <div class="${messageClass}">
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    <div class="message-text"></div>
+                    <span class="message-time">${new Date().toLocaleTimeString()}</span>
+                </div>
+            </div>
+        `);
+        
+        chatMessages.append(messageContainer);
+        
+        const messageTextElement = messageContainer.find('.message-text');
+        
+        if (sender === 'ai' && message.length > 50) {
+            // Show typing animation for longer AI messages
+            let index = 0;
+            const formattedMessage = parseMarkdown(message);
+            
+            // For typing effect, we'll add the full formatted content but hide it
+            messageTextElement.html(formattedMessage).hide().fadeIn(300);
+        } else {
+            // For short messages or user messages, show immediately
+            const formattedMessage = sender === 'ai' ? parseMarkdown(message) : escapeHtml(message);
+            messageTextElement.html(formattedMessage);
+        }
+        
         chatMessages.scrollTop(chatMessages[0].scrollHeight);
     }
     
@@ -194,13 +336,13 @@ jQuery(document).ready(function($) {
     chatInput.on('input', function() {
         if ($(this).val().toLowerCase() === 'debug') {
             setTimeout(function() {
-                addMessageToChat('ai', '🔧 Debug mode activated! Here are some technical details:\n\n' +
-                    '• AI Model: Google Gemini 1.5 Flash\n' +
-                    '• Response Time: ~2-3 seconds\n' +
-                    '• Content Analysis: Semantic matching enabled\n' +
-                    '• Chat History: Maintained for session\n' +
-                    '• Error Logging: Active\n\n' +
-                    'Want to see the source code? Check the browser developer tools! 🚀');
+                addMessageToChatWithTyping('ai', '**Debug mode activated!** Here are some technical details:\n\n' +
+                    '• **AI Model:** Google Gemini 1.5 Flash\n' +
+                    '• **Response Time:** ~2-3 seconds\n' +
+                    '• **Content Analysis:** Semantic matching enabled\n' +
+                    '• **Chat History:** Maintained for session\n' +
+                    '• **Error Logging:** Active\n\n' +
+                    'Want to see the source code? Check the browser developer tools!');
             }, 500);
         }
     });
