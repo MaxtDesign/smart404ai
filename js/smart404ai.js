@@ -11,6 +11,53 @@ jQuery(document).ready(function($) {
     const chatSend = $('#chat-send');
     const loadingIndicator = $('#ai-loading');
     
+    // Overlay elements
+    const chatOverlay = $('#chat-overlay');
+    const chatOverlayMessages = $('#chat-overlay-messages');
+    const chatOverlayInput = $('#chat-overlay-input');
+    const chatOverlaySend = $('#chat-overlay-send');
+    const expandChatBtn = $('#expand-chat');
+    const closeChatBtn = $('#close-chat-overlay');
+    
+    // Expandable chat functionality
+    expandChatBtn.click(function() {
+        // Sync messages to overlay
+        chatOverlayMessages.html(chatMessages.html());
+        chatOverlay.fadeIn(300);
+        chatOverlayInput.focus();
+    });
+    
+    closeChatBtn.click(function() {
+        chatOverlay.fadeOut(300);
+    });
+    
+    // Close overlay on background click
+    chatOverlay.click(function(e) {
+        if (e.target === this) {
+            chatOverlay.fadeOut(300);
+        }
+    });
+    
+    // Close overlay on Escape key
+    $(document).keydown(function(e) {
+        if (e.key === 'Escape' && chatOverlay.is(':visible')) {
+            chatOverlay.fadeOut(300);
+        }
+    });
+    
+    // Sync input between regular and overlay chat
+    function syncChatInputs(sourceInput, targetInput) {
+        targetInput.val(sourceInput.val());
+    }
+    
+    chatInput.on('input', function() {
+        syncChatInputs($(this), chatOverlayInput);
+    });
+    
+    chatOverlayInput.on('input', function() {
+        syncChatInputs($(this), chatInput);
+    });
+    
     // Send message function
     function sendMessage(message) {
         if (!message.trim()) return;
@@ -253,14 +300,24 @@ jQuery(document).ready(function($) {
         return div.innerHTML;
     }
     
-    // Event listeners
+    // Event listeners for both chat interfaces
     chatSend.click(function() {
         sendMessage(chatInput.val());
+    });
+    
+    chatOverlaySend.click(function() {
+        sendMessage(chatOverlayInput.val(), true);
     });
     
     chatInput.keypress(function(e) {
         if (e.which === 13) { // Enter key
             sendMessage(chatInput.val());
+        }
+    });
+    
+    chatOverlayInput.keypress(function(e) {
+        if (e.which === 13) { // Enter key
+            sendMessage(chatOverlayInput.val(), true);
         }
     });
     
@@ -361,13 +418,14 @@ jQuery(document).ready(function($) {
         if ($(this).val().toLowerCase() === 'debug') {
             setTimeout(function() {
                 addMessageToChatWithTyping('ai', '**Debug mode activated!** Here are some technical details:\n\n' +
-                    '• **AI Model:** Google Gemini 1.5 Flash\n' +
+                    '• **AI Provider:** Multi-provider support (Gemini, OpenAI, Claude)\n' +
                     '• **Smart Analysis:** URL analyzed behind-the-scenes for suggestions\n' +
                     '• **Entertainment Mode:** Fun 404 titles and messages generated\n' +
                     '• **Max Suggestions:** Limited to 4 most relevant matches\n' +
                     '• **Response Time:** ~2-3 seconds\n' +
-                    '• **Chat History:** Maintained for session\n\n' +
-                    'The AI now provides both practical help AND entertainment!');
+                    '• **Chat History:** Maintained for session\n' +
+                    '• **Models Used:** GPT-4o-mini, Claude-3-Haiku, Gemini-1.5-Flash\n\n' +
+                    'The AI now provides both practical help AND entertainment with multiple provider options!');
             }, 500);
         }
     });

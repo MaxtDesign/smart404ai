@@ -4,14 +4,20 @@
 ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-green.svg)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)
 ![License](https://img.shields.io/badge/license-GPL--2.0%2B-red.svg)
-![AI Powered](https://img.shields.io/badge/AI-Google%20Gemini-orange.svg)
+![AI Powered](https://img.shields.io/badge/AI-Multi--Provider-orange.svg)
 
-Transform your WordPress 404 error pages into intelligent, AI-driven user experiences using Google Gemini. Smart404AI analyzes broken URLs, understands user intent, and provides personalized content suggestions through real-time AI interaction.
+Transform your WordPress 404 error pages into intelligent, AI-driven user experiences using your choice of Google Gemini, OpenAI GPT, or Anthropic Claude. Smart404AI analyzes broken URLs, understands user intent, and provides personalized content suggestions through real-time AI interaction.
 
 ## Features
 
+### Multi-Provider AI Support
+- Choose between Google Gemini, OpenAI GPT, or Anthropic Claude
+- Free tier available with Google Gemini
+- Cost-effective models: GPT-4o-mini, Claude-3-Haiku, Gemini-1.5-Flash
+- Easy provider switching without losing settings
+
 ### Intelligent URL Analysis
-- Semantic analysis of broken URLs using Google Gemini
+- Semantic analysis of broken URLs using advanced AI models
 - Context-aware understanding of user intent
 - Cross-referencing with existing site content
 - Smart scoring of content similarity
@@ -23,7 +29,7 @@ Transform your WordPress 404 error pages into intelligent, AI-driven user experi
 - Real-time content discovery
 
 ### Interactive AI Assistant
-- Live chat powered by Google Gemini 1.5 Flash
+- Live chat powered by your chosen AI provider
 - Natural language query understanding
 - Site-specific knowledge integration
 - Conversational troubleshooting
@@ -45,7 +51,10 @@ Transform your WordPress 404 error pages into intelligent, AI-driven user experi
 
 - WordPress 5.0 or higher
 - PHP 7.4 or higher
-- Google AI Studio API key (free tier available)
+- API key from at least one supported provider:
+  - Google AI Studio (free tier available)
+  - OpenAI Platform (pay-per-use)
+  - Anthropic Console (pay-per-use)
 - Modern web browser with JavaScript enabled
 
 ## Installation
@@ -66,20 +75,34 @@ Transform your WordPress 404 error pages into intelligent, AI-driven user experi
 
 ## Configuration
 
-### Getting Your Google Gemini API Key
+### Getting Your API Keys
 
+**Google Gemini (Recommended for beginners)**
 1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Sign in with your Google account
 3. Create a new API key
 4. Copy the generated key
 
+**OpenAI GPT**
+1. Visit [OpenAI Platform](https://platform.openai.com/api-keys)
+2. Sign in or create an account
+3. Navigate to API Keys section
+4. Create a new secret key
+
+**Anthropic Claude**
+1. Visit [Anthropic Console](https://console.anthropic.com/)
+2. Sign in or create an account
+3. Navigate to API Keys section
+4. Create a new API key
+
 ### Plugin Setup
 
 1. Go to **Settings > Smart404AI** in your WordPress admin
-2. Paste your Google Gemini API key in the designated field
-3. Enable/disable the AI chat feature as desired
-4. Click **Save Changes**
-5. Use the **Test Gemini Connection** button to verify setup
+2. Select your preferred AI provider
+3. Paste the corresponding API key in the designated field
+4. Enable/disable the AI chat feature as desired
+5. Click **Save Changes**
+6. Use the **Test Connection** button to verify setup
 
 ## Usage
 
@@ -117,12 +140,36 @@ smart404ai/
 
 ## API Integration
 
-Smart404AI integrates with Google's Generative AI API using the Gemini 1.5 Flash model. The plugin handles:
+Smart404AI integrates with multiple leading AI providers, allowing you to choose the best option for your needs:
 
+### Supported Providers
+
+**Google Gemini 1.5 Flash**
+- Free tier available (60 requests per minute)
+- Fast response times
+- Good for high-traffic sites
+- Excellent at creative content generation
+
+**OpenAI GPT-4o-mini**
+- Pay-per-use pricing
+- High-quality responses
+- Strong reasoning capabilities
+- Great for complex analysis
+
+**Anthropic Claude 3 Haiku**
+- Pay-per-use pricing
+- Fast and cost-effective
+- Excellent safety features
+- Good for conversational interactions
+
+### API Features
+
+The plugin handles:
 - Secure API key management
 - Request rate limiting
 - Error handling and fallbacks
 - Response caching for performance
+- Provider-specific optimizations
 
 ### API Calls
 
@@ -131,6 +178,7 @@ The plugin makes API calls for:
 - Dynamic message generation
 - Interactive chat responses
 - Content suggestion explanations
+- Entertaining 404 content creation
 
 ## Customization
 
@@ -272,12 +320,15 @@ We welcome contributions to Smart404AI:
 
 ### Version 1.0.0
 - Initial release
-- Google Gemini integration
-- Real-time AI chat
-- Intelligent URL analysis
-- Comprehensive analytics
-- Responsive design
+- Multi-provider AI integration (Google Gemini, OpenAI GPT, Anthropic Claude)
+- Real-time AI chat with markdown support
+- Intelligent URL analysis and content suggestions
+- Entertaining 404 titles and messages
+- Comprehensive analytics and log management
+- Page creation from 404 patterns
+- Responsive design with modern icons
 - WordPress 5.0+ compatibility
+- Cost-effective model selection (GPT-4o-mini, Claude-3-Haiku, Gemini-1.5-Flash)
 
 ## License
 
@@ -297,11 +348,11 @@ GNU General Public License for more details.
 
 ## Credits
 
-- Developed by [Your Name]
-- Powered by Google Gemini AI
+- Developed by MaxtDesign
+- Powered by Google Gemini, OpenAI GPT, and Anthropic Claude
 - Built for WordPress
 - Inspired by modern user experience principles
 
 ---
 
-**Smart404AI** - Making 404 errors intelligent, one page at a time.
+**Smart404AI** - Making 404 errors intelligent with your choice of leading AI providers.

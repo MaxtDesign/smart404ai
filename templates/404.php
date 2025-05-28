@@ -60,6 +60,12 @@ $ai_analysis = $smart404ai->analyze_broken_url($current_url, $referrer);
         <div class="ai-chat-section">
             <h2><span class="icon-chat"></span> Ask Our AI Assistant</h2>
             <div class="ai-chat-container">
+                <div class="chat-header">
+                    <span class="chat-title">AI Assistant</span>
+                    <button type="button" id="expand-chat" class="expand-chat-btn" title="Expand Chat">
+                        <span class="icon-expand"></span>
+                    </button>
+                </div>
                 <div class="chat-messages" id="chat-messages">
                     <div class="ai-message">
                         <div class="message-avatar"><span class="icon-bot"></span></div>
@@ -79,6 +85,25 @@ $ai_analysis = $smart404ai->analyze_broken_url($current_url, $referrer);
                     <button class="suggestion-btn" data-question="What are your most popular posts?">Most popular posts</button>
                     <button class="suggestion-btn" data-question="Show me your latest articles">Latest articles</button>
                     <button class="suggestion-btn" data-question="Where is your contact page?">Contact information</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expanded Chat Overlay -->
+        <div id="chat-overlay" class="chat-overlay" style="display: none;">
+            <div class="chat-overlay-content">
+                <div class="chat-overlay-header">
+                    <h3><span class="icon-chat"></span> AI Assistant</h3>
+                    <button type="button" id="close-chat-overlay" class="close-overlay-btn">
+                        <span class="icon-close"></span>
+                    </button>
+                </div>
+                <div class="chat-overlay-messages" id="chat-overlay-messages">
+                    <!-- Messages will be synced here -->
+                </div>
+                <div class="chat-overlay-input">
+                    <input type="text" id="chat-overlay-input" placeholder="Ask me anything about this site..." />
+                    <button id="chat-overlay-send" type="button">Send</button>
                 </div>
             </div>
         </div>
