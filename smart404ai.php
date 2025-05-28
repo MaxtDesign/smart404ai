@@ -612,7 +612,7 @@ Remember to stay true to the brand voice - if it's humorous, be funny; if it's p
     }
     
     public function admin_init() {
-        register_setting('smart404ai_options', 'smart404ai_options');
+        register_setting('smart404ai_options', 'smart404ai_options', array($this, 'sanitize_options'));
         
         add_settings_section(
             'smart404ai_main',
@@ -748,19 +748,19 @@ Remember to stay true to the brand voice - if it's humorous, be funny; if it's p
     
     public function gemini_api_key_callback() {
         $value = isset($this->plugin_options['gemini_api_key']) ? $this->plugin_options['gemini_api_key'] : '';
-        echo '<input type="password" name="smart404ai_options[gemini_api_key]" value="' . esc_attr($value) . '" size="50" class="api-key-field" data-provider="gemini" />';
+        echo '<input type="password" name="smart404ai_options[gemini_api_key]" value="' . esc_attr($value) . '" size="50" class="api-key-field" id="gemini-api-key" />';
         echo '<p class="description">Get your API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a> (Free tier available)</p>';
     }
     
     public function openai_api_key_callback() {
         $value = isset($this->plugin_options['openai_api_key']) ? $this->plugin_options['openai_api_key'] : '';
-        echo '<input type="password" name="smart404ai_options[openai_api_key]" value="' . esc_attr($value) . '" size="50" class="api-key-field" data-provider="openai" />';
+        echo '<input type="password" name="smart404ai_options[openai_api_key]" value="' . esc_attr($value) . '" size="50" class="api-key-field" id="openai-api-key" />';
         echo '<p class="description">Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a> (Pay-per-use pricing)</p>';
     }
     
     public function anthropic_api_key_callback() {
         $value = isset($this->plugin_options['anthropic_api_key']) ? $this->plugin_options['anthropic_api_key'] : '';
-        echo '<input type="password" name="smart404ai_options[anthropic_api_key]" value="' . esc_attr($value) . '" size="50" class="api-key-field" data-provider="anthropic" />';
+        echo '<input type="password" name="smart404ai_options[anthropic_api_key]" value="' . esc_attr($value) . '" size="50" class="api-key-field" id="anthropic-api-key" />';
         echo '<p class="description">Get your API key from <a href="https://console.anthropic.com/" target="_blank">Anthropic Console</a> (Pay-per-use pricing)</p>';
     }
     
@@ -768,6 +768,45 @@ Remember to stay true to the brand voice - if it's humorous, be funny; if it's p
         $value = isset($this->plugin_options['enable_chat']) ? $this->plugin_options['enable_chat'] : 1;
         echo '<input type="checkbox" name="smart404ai_options[enable_chat]" value="1" ' . checked(1, $value, false) . ' />';
         echo '<label>Enable AI chat assistant on 404 pages</label>';
+        echo '<p class="description">Current status: <strong>' . ($value ? 'Enabled' : 'Disabled') . '</strong></p>';
+    }
+    
+    public function sanitize_options($input) {
+        $sanitized = array();
+        
+        // Handle text fields
+        if (isset($input['ai_provider'])) {
+            $sanitized['ai_provider'] = sanitize_text_field($input['ai_provider']);
+        }
+        
+        if (isset($input['gemini_api_key'])) {
+            $sanitized['gemini_api_key'] = sanitize_text_field($input['gemini_api_key']);
+        }
+        
+        if (isset($input['openai_api_key'])) {
+            $sanitized['openai_api_key'] = sanitize_text_field($input['openai_api_key']);
+        }
+        
+        if (isset($input['anthropic_api_key'])) {
+            $sanitized['anthropic_api_key'] = sanitize_text_field($input['anthropic_api_key']);
+        }
+        
+        if (isset($input['brand_tone'])) {
+            $sanitized['brand_tone'] = sanitize_text_field($input['brand_tone']);
+        }
+        
+        if (isset($input['industry_template'])) {
+            $sanitized['industry_template'] = sanitize_text_field($input['industry_template']);
+        }
+        
+        if (isset($input['brand_sample'])) {
+            $sanitized['brand_sample'] = sanitize_textarea_field($input['brand_sample']);
+        }
+        
+        // Handle checkbox - if not set, it means unchecked
+        $sanitized['enable_chat'] = isset($input['enable_chat']) ? 1 : 0;
+        
+        return $sanitized;
     }
     
     public function admin_page() {
@@ -803,18 +842,32 @@ Remember to stay true to the brand voice - if it's humorous, be funny; if it's p
         
         <script>
         jQuery(document).ready(function($) {
+            // Add classes and data attributes to API key rows on page load
+            $('#gemini-api-key').closest('tr').addClass('api-key-row').attr('data-provider', 'gemini');
+            $('#openai-api-key').closest('tr').addClass('api-key-row').attr('data-provider', 'openai');
+            $('#anthropic-api-key').closest('tr').addClass('api-key-row').attr('data-provider', 'anthropic');
+            
             // Handle provider switching
             $('#ai_provider').change(function() {
                 var selectedProvider = $(this).val();
                 $('#current-provider').text(selectedProvider.charAt(0).toUpperCase() + selectedProvider.slice(1));
                 
-                // Show/hide relevant API key fields
-                $('.api-key-field').closest('tr').hide();
-                $('.api-key-field[data-provider="' + selectedProvider + '"]').closest('tr').show();
+                console.log('Smart404AI: Switching to provider:', selectedProvider);
+                
+                // Hide all API key rows
+                $('.api-key-row').removeClass('active');
+                
+                // Show the selected provider's API key row
+                var targetRow = $('.api-key-row[data-provider="' + selectedProvider + '"]');
+                targetRow.addClass('active');
+                
+                console.log('Smart404AI: Showing row for', selectedProvider, targetRow.length);
             });
             
-            // Initialize visibility
-            $('#ai_provider').trigger('change');
+            // Initialize visibility on page load
+            setTimeout(function() {
+                $('#ai_provider').trigger('change');
+            }, 100);
             
             $('#test-ai-integration').click(function() {
                 $(this).prop('disabled', true).text('Testing...');
@@ -837,11 +890,14 @@ Remember to stay true to the brand voice - if it's humorous, be funny; if it's p
         </script>
         
         <style>
-        .api-key-field[data-provider]:not([data-provider="gemini"]) {
-            display: none;
-        }
         .api-key-field {
             width: 400px;
+        }
+        .api-key-row {
+            display: none;
+        }
+        .api-key-row.active {
+            display: table-row;
         }
         .notice {
             padding: 10px;

@@ -5,11 +5,17 @@
 
 jQuery(document).ready(function($) {
     
-    // Chat functionality
+    // Chat functionality - only initialize if chat elements exist
     const chatMessages = $('#chat-messages');
     const chatInput = $('#chat-input');
     const chatSend = $('#chat-send');
     const loadingIndicator = $('#ai-loading');
+    
+    // Check if chat is enabled before initializing
+    if (chatMessages.length === 0) {
+        console.log('Smart404AI: Chat is disabled in settings');
+        return;
+    }
     
     // Overlay elements
     const chatOverlay = $('#chat-overlay');
@@ -21,6 +27,7 @@ jQuery(document).ready(function($) {
     
     // Expandable chat functionality
     expandChatBtn.click(function() {
+        console.log('Smart404AI: Expanding chat to overlay');
         // Sync messages to overlay
         chatOverlayMessages.html(chatMessages.html());
         chatOverlay.fadeIn(300);
@@ -28,12 +35,14 @@ jQuery(document).ready(function($) {
     });
     
     closeChatBtn.click(function() {
+        console.log('Smart404AI: Closing chat overlay');
         chatOverlay.fadeOut(300);
     });
     
     // Close overlay on background click
     chatOverlay.click(function(e) {
         if (e.target === this) {
+            console.log('Smart404AI: Closing chat overlay (background click)');
             chatOverlay.fadeOut(300);
         }
     });
@@ -41,9 +50,17 @@ jQuery(document).ready(function($) {
     // Close overlay on Escape key
     $(document).keydown(function(e) {
         if (e.key === 'Escape' && chatOverlay.is(':visible')) {
+            console.log('Smart404AI: Closing chat overlay (Escape key)');
             chatOverlay.fadeOut(300);
         }
     });
+    
+    // Debug: Log if expand button exists
+    if (expandChatBtn.length > 0) {
+        console.log('Smart404AI: Expand chat button found');
+    } else {
+        console.log('Smart404AI: Expand chat button NOT found');
+    }
     
     // Sync input between regular and overlay chat
     function syncChatInputs(sourceInput, targetInput) {

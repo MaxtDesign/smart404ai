@@ -18,19 +18,14 @@
     padding: 40px 20px;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(3px);
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.1);
 }
 
 .smart404ai-title {
     font-size: 3.5em;
     margin: 0 0 15px 0;
     line-height: 1.1;
-}
-
-@keyframes titleGlow {
-    0% { filter: brightness(1); }
-    100% { filter: brightness(1.2); }
 }
 
 .smart404ai-subtitle {
@@ -52,8 +47,8 @@
     background: rgba(255, 255, 255, 0.95);
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(3px);
     display: none; /* Hidden as we now use header for entertaining content */
 }
 
@@ -83,8 +78,8 @@
     background: rgba(255, 255, 255, 0.95);
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(3px);
 }
 
 .ai-suggestions-section h2 {
@@ -111,7 +106,7 @@
 
 .suggestion-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.15);
     border-color: #4285f4;
 }
 
@@ -170,8 +165,8 @@
     background: rgba(255, 255, 255, 0.95);
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(3px);
 }
 
 .ai-chat-section h2 {
@@ -202,16 +197,38 @@
 }
 
 .expand-chat-btn {
-    background: none;
-    border: none;
+    background: rgba(66, 133, 244, 0.1);
+    border: 1px solid rgba(66, 133, 244, 0.2);
     cursor: pointer;
-    padding: 5px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #4285f4;
+    font-weight: 500;
 }
 
 .expand-chat-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(66, 133, 244, 0.15);
+    border-color: rgba(66, 133, 244, 0.3);
+    transform: translateY(-1px);
+}
+
+.expand-chat-btn .icon-expand::before {
+    width: 14px;
+    height: 14px;
+    opacity: 0.8;
+    margin-right: 0;
+}
+
+.expand-text {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .chat-messages {
@@ -523,7 +540,7 @@
     background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.1);
 }
 
 .technical-details summary {
@@ -558,7 +575,7 @@
     padding: 30px;
     border-radius: 15px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.1);
 }
 
 .fallback-navigation h3 {
@@ -618,7 +635,7 @@
     max-height: 600px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.3);
     animation: modalSlideIn 0.3s ease;
 }
 
@@ -755,9 +772,9 @@
     padding: 30px;
     border-radius: 15px;
     text-align: center;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(3px);
 }
 .ai-loading {
     position: fixed;
@@ -768,9 +785,9 @@
     padding: 30px;
     border-radius: 15px;
     text-align: center;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(3px);
 }
 
 .loading-spinner {
