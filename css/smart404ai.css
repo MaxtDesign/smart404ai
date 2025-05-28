@@ -198,17 +198,18 @@
 .ai-message, .user-message {
     display: flex;
     margin: 15px 0;
-    animation: messageSlideIn 0.3s ease;
+    opacity: 0;
+    animation: messageSlideIn 0.4s ease forwards;
 }
 
 @keyframes messageSlideIn {
     from {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
     }
 }
 
@@ -249,9 +250,153 @@
     position: relative;
 }
 
-.message-content p {
-    margin: 0;
+.message-text {
+    line-height: 1.5;
+}
+
+.message-text p {
+    margin: 0 0 8px 0;
+}
+
+.message-text p:last-of-type {
+    margin-bottom: 0;
+}
+
+.message-text h1,
+.message-text h2,
+.message-text h3,
+.message-text h4 {
+    margin: 8px 0 4px 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.message-text h1 {
+    font-size: 1.2em;
+}
+
+.message-text h2 {
+    font-size: 1.1em;
+}
+
+.message-text h3 {
+    font-size: 1.05em;
+}
+
+.message-text h4 {
+    font-size: 1em;
+}
+
+.message-text strong {
+    font-weight: 600;
+    color: #333;
+}
+
+.message-text em {
+    font-style: italic;
+}
+
+.message-text code {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9em;
+}
+
+.message-text pre {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+
+.message-text pre code {
+    background: none;
+    padding: 0;
+}
+
+.message-text ul,
+.message-text ol {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.message-text li {
+    margin: 4px 0;
     line-height: 1.4;
+}
+
+.message-text ul li {
+    list-style-type: disc;
+}
+
+.message-text ol li {
+    list-style-type: decimal;
+}
+
+.message-text li p {
+    margin: 0;
+    display: inline;
+}
+
+/* Nested lists */
+.message-text ul ul,
+.message-text ol ol,
+.message-text ul ol,
+.message-text ol ul {
+    margin: 4px 0;
+    padding-left: 16px;
+}
+
+/* Better spacing for mixed content */
+.message-text h1 + p,
+.message-text h2 + p,
+.message-text h3 + p,
+.message-text h4 + p {
+    margin-top: 4px;
+}
+
+.message-text ul + p,
+.message-text ol + p,
+.message-text pre + p {
+    margin-top: 12px;
+}
+
+.message-text a {
+    color: #4285f4;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.message-text a:hover {
+    border-bottom-color: #4285f4;
+}
+
+.user-message .message-text h1,
+.user-message .message-text h2,
+.user-message .message-text h3,
+.user-message .message-text h4,
+.user-message .message-text strong {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.user-message .message-text code {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.user-message .message-text pre {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.user-message .message-text a {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.user-message .message-text a:hover {
+    border-bottom-color: rgba(255, 255, 255, 0.9);
 }
 
 .message-time {
