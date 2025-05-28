@@ -3,8 +3,8 @@
  * Plugin Name: Smart404AI
  * Description: Transform 404 errors into intelligent, AI-driven user experiences using Google Gemini
  * Version: 1.0.0
- * Author: Your Name
- * Plugin URI: https://github.com/yourname/smart404ai
+ * Author: Maxt Design
+ * Plugin URI: https://github.com/MaxtDesign/smart404ai
  * Text Domain: smart404ai
  */
 
